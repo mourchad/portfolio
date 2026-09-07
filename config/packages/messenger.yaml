@@ -1,0 +1,9 @@
+framework:
+    messenger:
+        transports:
+            # Plus aucun worker de file d'attente n'est deploye : les emails
+            # sont envoyes de facon synchrone pendant la requete.
+            sync: 'sync://'
+
+        routing:
+            'Symfony\Component\Mailer\Messenger\SendEmailMessage': sync

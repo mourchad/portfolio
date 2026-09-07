@@ -1,0 +1,46 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block page_title %}{% if isEdit %}Modifier : {{ project.title }}{% else %}Nouveau projet{% endif %}{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-lg-9 col-xl-8">
+        <div class="panel-card reveal">
+            <div class="panel-head">
+                <h2>
+                    <i class="bi {{ isEdit ? 'bi-pencil-square' : 'bi-plus-circle' }} me-2"></i>
+                    {% if isEdit %}Modifier le projet{% else %}Ajouter un projet{% endif %}
+                </h2>
+            </div>
+
+            {{ form_start(form) }}
+                {{ form_errors(form) }}
+
+                <div class="row g-3">
+                    <div class="col-12">{{ form_row(form.title) }}</div>
+                    <div class="col-md-6">{{ form_row(form.category) }}</div>
+                    <div class="col-md-6">{{ form_row(form.position) }}</div>
+                    <div class="col-12">{{ form_row(form.description) }}</div>
+                    <div class="col-12">{{ form_row(form.technologiesRaw) }}</div>
+                    <div class="col-md-6">{{ form_row(form.image) }}</div>
+                    <div class="col-md-6">{{ form_row(form.icon) }}</div>
+                    <div class="col-12">{{ form_row(form.url) }}</div>
+                    <div class="col-12">
+                        <div class="form-check form-switch ps-0">
+                            {{ form_widget(form.featured, {row_attr: {class: 'form-check form-switch'}}) }}
+                            {{ form_label(form.featured) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top border-secondary-subtle">
+                    <button type="submit" class="btn-glow">
+                        <i class="bi bi-save me-2"></i>{{ isEdit ? 'Enregistrer les modifications' : 'Créer le projet' }}
+                    </button>
+                    <a href="{{ path('admin_project_index') }}" class="btn-ghost justify-content-center">Annuler</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

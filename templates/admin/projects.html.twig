@@ -1,0 +1,55 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block page_title %}Projets du portfolio{% endblock %}
+
+{% block body %}
+<div class="panel-card reveal">
+    <div class="panel-head d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <h2><i class="bi bi-folder2-open me-2"></i>{{ projects|length }} projet{{ projects|length > 1 ? 's' : '' }} publié{{ projects|length > 1 ? 's' : '' }}</h2>
+        <a href="{{ path('admin_project_new') }}" class="btn-glow"><i class="bi bi-plus-lg me-2"></i>Nouveau projet</a>
+    </div>
+
+    {% if projects is empty %}
+        <p class="empty-note py-5 text-center"><i class="bi bi-folder me-2"></i>Aucun projet. Cliquez sur « Nouveau projet » pour commencer.</p>
+    {% else %}
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Titre</th>
+                        <th>Catégorie</th>
+                        <th>Technologies</th>
+                        <th>Vedette</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in projects %}
+                        <tr>
+                            <td class="text-dim">{{ project.position }}</td>
+                            <td>
+                                <strong>{{ project.title }}</strong>
+                                {% if project.image %}<small class="d-block text-dim"><i class="bi bi-image me-1"></i>image personnalisée</small>{% endif %}
+                            </td>
+                            <td><span class="pill pill-blue">{{ project.category }}</span></td>
+                            <td class="small text-dim">{{ project.technologies|join(', ') }}</td>
+                            <td>{% if project.featured %}<i class="bi bi-star-fill text-warning"></i>{% else %}<span class="text-dim">—</span>{% endif %}</td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a href="{{ path('admin_project_edit', {id: project.id}) }}" class="icon-btn" title="Modifier"><i class="bi bi-pencil-square"></i></a>
+                                    <form method="post" action="{{ path('admin_project_delete', {id: project.id}) }}"
+                                          onsubmit="return confirm('Supprimer définitivement ce projet ?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_project_' ~ project.id) }}">
+                                        <button type="submit" class="icon-btn danger" title="Supprimer"><i class="bi bi-trash3"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

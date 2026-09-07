@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Administration{% endblock %} | M - Creative &amp; Digital</title>
+    <link rel="icon" type="image/png" href="{{ asset('assets/img/favicon.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/css/admin.css') }}" rel="stylesheet">
+</head>
+<body data-bs-theme="dark" class="admin-body">
+
+<aside class="admin-sidebar" id="adminSidebar">
+    <a class="sidebar-brand" href="{{ path('admin_dashboard') }}">
+        <span class="brand-badge"><img src="{{ asset('assets/img/logo.jpeg') }}" alt="" class="brand-img"></span>
+        <span class="brand-text">Creative <span>&amp;</span> Digital<span class="admin-suffix">.admin</span></span>
+    </a>
+
+    <nav class="sidebar-nav">
+        <span class="nav-section">Gestion</span>
+        <a href="{{ path('admin_dashboard') }}" class="sidebar-link{% if app.request.get('_route') == 'admin_dashboard' %} active{% endif %}">
+            <i class="bi bi-grid-1x2"></i><span>Tableau de bord</span>
+        </a>
+        <a href="{{ path('admin_message_index') }}" class="sidebar-link{% if app.request.get('_route') starts with 'admin_message_' %} active{% endif %}">
+            <i class="bi bi-envelope"></i><span>Messages</span>
+            <span class="badge-unread" data-unread-badge>{{ render(controller('App\\Controller\\Admin\\MessageController::unreadBadge')) }}</span>
+        </a>
+
+        <span class="nav-section">Contenu du site</span>
+        <a href="{{ path('admin_project_index') }}" class="sidebar-link{% if app.request.get('_route') starts with 'admin_project_' %} active{% endif %}">
+            <i class="bi bi-folder2-open"></i><span>Projets</span>
+        </a>
+        <a href="{{ path('admin_path_index') }}" class="sidebar-link{% if app.request.get('_route') starts with 'admin_path_' %} active{% endif %}">
+            <i class="bi bi-signpost-2"></i><span>Parcours</span>
+        </a>
+        <a href="{{ path('admin_skill_index') }}" class="sidebar-link{% if app.request.get('_route') starts with 'admin_skill_' %} active{% endif %}">
+            <i class="bi bi-bar-chart-steps"></i><span>Compétences</span>
+        </a>
+        <a href="{{ path('admin_media_index') }}" class="sidebar-link{% if app.request.get('_route') starts with 'admin_media_' %} active{% endif %}">
+            <i class="bi bi-collection"></i><span>Médiathèque</span>
+        </a>
+
+        <span class="nav-section">Identité</span>
+        <a href="{{ path('admin_profile_edit') }}" class="sidebar-link{% if app.request.get('_route') == 'admin_profile_edit' %} active{% endif %}">
+            <i class="bi bi-person-badge"></i><span>Profil & coordonnées</span>
+        </a>
+        <a href="{{ path('admin_social_index') }}" class="sidebar-link{% if app.request.get('_route') starts with 'admin_social_' %} active{% endif %}">
+            <i class="bi bi-share"></i><span>Réseaux sociaux</span>
+        </a>
+
+        <span class="nav-section">Extérieur</span>
+        <a href="{{ path('app_home') }}" target="_blank" rel="noopener" class="sidebar-link">
+            <i class="bi bi-box-arrow-up-right"></i><span>Voir le site</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="admin-user">
+            <span class="avatar"><i class="bi bi-person-fill"></i></span>
+            <div>
+                <strong>{{ app.user.userIdentifier }}</strong>
+                <small>Administrateur</small>
+            </div>
+        </div>
+        <form method="post" action="{{ path('app_logout') }}">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+            <button type="submit" class="btn-logout"><i class="bi bi-box-arrow-left me-2"></i>Déconnexion</button>
+        </form>
+    </div>
+</aside>
+
+<button class="sidebar-toggle d-lg-none" id="sidebarToggle" aria-label="Ouvrir le menu"><i class="bi bi-list"></i></button>
+
+<main class="admin-main">
+    <header class="admin-topbar">
+        <h1 class="topbar-title">{% block page_title %}Tableau de bord{% endblock %}</h1>
+        <span class="topbar-date"><i class="bi bi-calendar3 me-2"></i>{{ 'now'|format_datetime('full', 'short', locale='fr')|capitalize }}</span>
+    </header>
+
+    {% for label in ['success', 'danger', 'warning'] %}
+        {% for flashMessage in app.flashes(label) %}
+            <div class="alert alert-{{ label == 'warning' ? 'warning' : label }} alert-dismissible fade show mx-4 mt-3 d-flex align-items-center gap-2">
+                <i class="bi {{ 'success' == label ? 'bi-check-circle-fill' : ('danger' == label ? 'bi-x-octagon-fill' : 'bi-exclamation-triangle-fill') }}"></i>
+                {{ flashMessage }}
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Fermer"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="admin-content">
+        {% block body %}{% endblock %}
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('assets/js/admin.js') }}"></script>
+{% block javascripts %}{% endblock %}
+</body>
+</html>

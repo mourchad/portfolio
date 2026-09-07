@@ -1,0 +1,57 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block page_title %}Messages reçus{% endblock %}
+
+{% block body %}
+<div class="panel-card reveal">
+    <div class="panel-head">
+        <h2><i class="bi bi-envelope me-2"></i>{{ messages|length }} message{{ messages|length > 1 ? 's' : '' }} reçu{{ messages|length > 1 ? 's' : '' }}</h2>
+    </div>
+
+    {% if messages is empty %}
+        <p class="empty-note py-5 text-center"><i class="bi bi-inbox me-2"></i>Aucun message reçu pour le moment.</p>
+    {% else %}
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Statut</th>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Sujet</th>
+                        <th>Date</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for message in messages %}
+                        <tr class="{{ message.isRead ? '' : 'row-unread' }}">
+                            <td>
+                                {% if message.isRead %}
+                                    <span class="pill pill-muted"><i class="bi bi-check2 me-1"></i>Lu</span>
+                                {% else %}
+                                    <span class="pill pill-violet">Nouveau</span>
+                                {% endif %}
+                            </td>
+                            <td class="fw-semibold">{{ message.name }}</td>
+                            <td><a href="mailto:{{ message.email }}" class="mail-link">{{ message.email }}</a></td>
+                            <td class="text-truncate cell-subject">{{ message.subject ?: '—' }}</td>
+                            <td class="text-dim text-nowrap">{{ message.createdAt|format_datetime('short', 'short', locale='fr') }}</td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a href="{{ path('admin_message_show', {id: message.id}) }}" class="icon-btn" title="Lire"><i class="bi bi-eye"></i></a>
+                                    <form method="post" action="{{ path('admin_message_delete', {id: message.id}) }}"
+                                          onsubmit="return confirm('Supprimer définitivement ce message ?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_message_' ~ message.id) }}">
+                                        <button type="submit" class="icon-btn danger" title="Supprimer"><i class="bi bi-trash3"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

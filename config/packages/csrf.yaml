@@ -1,0 +1,5 @@
+# Protection CSRF classique basée sur la session :
+# - tous les formulaires Symfony reçoivent un jeton anti-CSRF
+# - les connexions/déconnexions et suppressions sont également protégées
+framework:
+    csrf_protection: true

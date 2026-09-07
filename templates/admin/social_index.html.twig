@@ -1,0 +1,53 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block page_title %}Réseaux sociaux{% endblock %}
+
+{% block body %}
+<div class="panel-card reveal">
+    <div class="panel-head d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <h2><i class="bi bi-share me-2"></i>{{ links|length }} lien{{ links|length > 1 ? 's' : '' }} social{{ links|length > 1 ? 'aux' : '' }}</h2>
+        <a href="{{ path('admin_social_new') }}" class="btn-glow"><i class="bi bi-plus-lg me-2"></i>Nouveau lien</a>
+    </div>
+
+    {% if links is empty %}
+        <p class="empty-note py-5 text-center"><i class="bi bi-share-fill me-2"></i>Aucun réseau configuré. Les icônes n'apparaîtront pas sur le site.</p>
+    {% else %}
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Réseau</th>
+                        <th>Lien</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for link in links %}
+                        <tr>
+                            <td class="text-dim">{{ link.position }}</td>
+                            <td><i class="bi {{ link.icon }} me-2"></i><strong>{{ link.label }}</strong></td>
+                            <td class="small text-dim text-truncate" style="max-width: 380px;">{{ link.url }}</td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a href="{{ path('admin_social_edit', {id: link.id}) }}" class="icon-btn" title="Modifier"><i class="bi bi-pencil-square"></i></a>
+                                    <form method="post" action="{{ path('admin_social_delete', {id: link.id}) }}"
+                                          onsubmit="return confirm('Supprimer ce lien social ?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_social_' ~ link.id) }}">
+                                        <button type="submit" class="icon-btn danger" title="Supprimer"><i class="bi bi-trash3"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    <p class="small text-dim mt-3 mb-0">
+        <i class="bi bi-info-circle me-1"></i>
+        Ces icônes apparaissent dans le hero, la section contact et le pied de page du site.
+    </p>
+</div>
+{% endblock %}

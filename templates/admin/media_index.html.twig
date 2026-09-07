@@ -1,0 +1,75 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block page_title %}Médiathèque{% endblock %}
+
+{% block body %}
+<div class="panel-card reveal mb-4">
+    <div class="panel-head">
+        <h2><i class="bi bi-cloud-arrow-up me-2"></i>Téléverser des fichiers</h2>
+    </div>
+    <p class="small text-dim mb-3">
+        Images (jpg, png, webp, gif, avif) et documents (pdf, txt, csv, doc/docx, xls/xlsx, ppt/pptx, odt, ods) — 5 Mo maximum par fichier.
+        Les images de la médiathèque deviennent disponibles comme visuels dans le formulaire des projets.
+    </p>
+
+    {{ form_start(uploadForm, {attr: {class: 'upload-form d-flex flex-wrap align-items-center gap-3'}}) }}
+        <div class="flex-grow-1" style="min-width: 260px;">
+            {{ form_widget(uploadForm.files) }}
+        </div>
+        {{ form_errors(uploadForm.files) }}
+        <button type="submit" class="btn-glow"><i class="bi bi-upload me-2"></i>Téléverser</button>
+    {{ form_end(uploadForm) }}
+</div>
+
+<div class="panel-card reveal">
+    <div class="panel-head">
+        <h2><i class="bi bi-collection me-2"></i>{{ medias|length }} fichier{{ medias|length > 1 ? 's' : '' }} dans la médiathèque</h2>
+    </div>
+
+    {% if medias is empty %}
+        <p class="empty-note py-5 text-center"><i class="bi bi-images me-2"></i>Aucun fichier. Téléversez votre première image ou votre premier document ci-dessus.</p>
+    {% else %}
+        <div class="row g-3 media-grid">
+            {% for media in medias %}
+                <div class="col-6 col-md-4 col-xl-3">
+                    <div class="media-card glass-card h-100 d-flex flex-column">
+                        <a href="{{ asset(media.getPath()) }}" target="_blank" rel="noopener" class="media-preview" title="Ouvrir dans un nouvel onglet">
+                            {% if media.isImage() %}
+                                <img src="{{ asset(media.getPath()) }}" alt="{{ media.getOriginalName() }}" loading="lazy">
+                            {% else %}
+                                <span class="media-file-icon"><i class="bi bi-file-earmark-text"></i></span>
+                            {% endif %}
+                        </a>
+                        <div class="media-meta p-3 flex-grow-1">
+                            <strong class="media-name text-truncate d-block" title="{{ media.getOriginalName() }}">{{ media.getOriginalName() }}</strong>
+                            <small class="text-dim d-block mt-1">
+                                <span class="pill {{ media.isImage() ? 'pill-blue' : 'pill-green' }}">{{ media.isImage() ? 'image' : 'document' }}</span>
+                                {{ (media.getSize() / 1024)|round }} Ko · {{ media.getCreatedAt()|format_datetime('short', 'none', locale='fr') }}
+                            </small>
+                        </div>
+                        <form method="post" action="{{ path('admin_media_delete', {id: media.id}) }}" class="px-3 pb-3"
+                              onsubmit="return confirm('Supprimer définitivement ce fichier ? Les projets qui l\'utilisent perdront leur visuel.');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete_media_' ~ media.id) }}">
+                            <button type="submit" class="icon-btn danger w-100" title="Supprimer"><i class="bi bi-trash3 me-1"></i>Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .media-card { overflow: hidden; }
+    .media-preview {
+        display: flex; align-items: center; justify-content: center;
+        height: 150px; background: rgba(7, 11, 38, .45); overflow: hidden;
+    }
+    .media-preview img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease; }
+    .media-preview:hover img { transform: scale(1.05); }
+    .media-file-icon { font-size: 3.4rem; color: #a78bfa; opacity: .8; }
+    .media-name { max-width: 100%; }
+    .pill-green { background: rgba(25, 135, 84, .18); color: #75dfc0; }
+    .upload-form input[type=file] { color: var(--bs-body-color); width: 100%; }
+</style>
+{% endblock %}

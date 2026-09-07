@@ -1,0 +1,109 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block page_title %}Tableau de bord{% endblock %}
+
+{% block body %}
+<div class="row g-4 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card reveal">
+            <span class="stat-icon violet"><i class="bi bi-envelope"></i></span>
+            <div>
+                <span class="stat-number">{{ messagesCount }}</span>
+                <span class="stat-caption">Messages reçus</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card reveal" style="--d:.06s">
+            <span class="stat-icon gold"><i class="bi bi-envelope-open"></i></span>
+            <div>
+                <span class="stat-number">{{ unreadCount }}</span>
+                <span class="stat-caption">Non lus</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card reveal" style="--d:.12s">
+            <span class="stat-icon blue"><i class="bi bi-folder2-open"></i></span>
+            <div>
+                <span class="stat-number">{{ projectsCount }}</span>
+                <span class="stat-caption">Projets publiés</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card reveal" style="--d:.18s">
+            <span class="stat-icon green"><i class="bi bi-clock-history"></i></span>
+            <div>
+                <span class="stat-number small-text">{{ lastMessageAt ? lastMessageAt|format_datetime('short', 'short', locale='fr') : '—' }}</span>
+                <span class="stat-caption">Dernier message</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="panel-card reveal" style="--d:.1s">
+            <div class="panel-head d-flex align-items-center justify-content-between">
+                <h2><i class="bi bi-envelope me-2"></i>Derniers messages</h2>
+                <a href="{{ path('admin_message_index') }}" class="see-all">Tout voir<i class="bi bi-arrow-right ms-1"></i></a>
+            </div>
+            {% if latestMessages is empty %}
+                <p class="empty-note"><i class="bi bi-inbox me-2"></i>Aucun message pour le moment.</p>
+            {% else %}
+                <ul class="mini-list">
+                    {% for message in latestMessages %}
+                        <li>
+                            <a href="{{ path('admin_message_show', {id: message.id}) }}" class="mini-item">
+                                <span class="dot{{ message.isRead ? '' : ' unread' }}"></span>
+                                <span class="flex-grow-1 min-w-0">
+                                    <strong>{{ message.name }}</strong>
+                                    <small class="text-dim text-truncate d-block">{{ message.subject ?: (message.content|striptags|slice(0, 60) ~ '…') }}</small>
+                                </span>
+                                <time class="text-dim small flex-shrink-0">{{ message.createdAt|format_datetime('short', 'none', locale='fr') }}</time>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="panel-card reveal" style="--d:.16s">
+            <div class="panel-head d-flex align-items-center justify-content-between">
+                <h2><i class="bi bi-folder2-open me-2"></i>Derniers projets</h2>
+                <a href="{{ path('admin_project_index') }}" class="see-all">Tout voir<i class="bi bi-arrow-right ms-1"></i></a>
+            </div>
+            {% if latestProjects is empty %}
+                <p class="empty-note"><i class="bi bi-folder me-2"></i>Aucun projet publié.</p>
+            {% else %}
+                <ul class="mini-list">
+                    {% for project in latestProjects %}
+                        <li>
+                            <a href="{{ path('admin_project_edit', {id: project.id}) }}" class="mini-item">
+                                <span class="proj-thumb"><i class="bi {{ project.icon ?: 'bi-code-slash' }}"></i></span>
+                                <span class="flex-grow-1 min-w-0">
+                                    <strong class="text-truncate d-block">{{ project.title }}</strong>
+                                    <small class="text-dim">{{ project.technologies|slice(0, 3)|join(' · ') }}</small>
+                                </span>
+                                {% if project.featured %}<span class="featured-star sm"><i class="bi bi-star-fill"></i></span>{% endif %}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="panel-card quick-actions reveal" style="--d:.22s">
+            <div class="panel-head">
+                <h2><i class="bi bi-lightning-charge me-2"></i>Actions rapides</h2>
+            </div>
+            <div class="d-grid gap-2">
+                <a href="{{ path('admin_project_new') }}" class="btn-glow w-100"><i class="bi bi-plus-circle me-2"></i>Ajouter un projet</a>
+                <a href="{{ path('admin_message_index') }}" class="btn-ghost w-100 justify-content-center"><i class="bi bi-envelope me-2"></i>Gérer les messages</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% set siteProfile = site_profile() %}
+    <meta name="description" content="{{ siteProfile.metaDescription }}">
+    <title>{% block title %}M - Creative &amp; Digital | Mourchad Alaofè{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ asset('assets/img/favicon.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('assets/img/logo-square.png') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('assets/css/editorial.css') }}" rel="stylesheet">
+    {% block stylesheets %}{% endblock %}
+</head>
+<body data-bs-theme="dark">
+
+<div class="preloader" id="preloader">
+    <div class="preloader-logo"><img src="{{ asset('assets/img/logo.jpeg') }}" alt="M - Creative &amp; Digital" class="preloader-img"></div>
+    <div class="preloader-bar"><span></span></div>
+</div>
+
+<div class="cursor-dot" aria-hidden="true"></div>
+<div class="cursor-ring" aria-hidden="true"></div>
+
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand" href="{{ path('app_home') }}#home">
+            <span class="brand-badge"><img src="{{ asset('assets/img/logo.jpeg') }}" alt="" class="brand-img"></span>
+            <span class="brand-text">Creative <span>&amp;</span> Digital</span>
+        </a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Menu">
+            <span class="toggler-bar"></span><span class="toggler-bar"></span><span class="toggler-bar"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+                <li class="nav-item"><a class="nav-link active" href="#home">Accueil</a></li>
+                <li class="nav-item"><a class="nav-link" href="#expertise">Expertise</a></li>
+                <li class="nav-item"><a class="nav-link" href="#competences">Compétences</a></li>
+                <li class="nav-item"><a class="nav-link" href="#interets">Intérêts</a></li>
+                <li class="nav-item"><a class="nav-link" href="#logiciels-langues">Logiciels &amp; Langues</a></li>
+                <li class="nav-item"><a class="nav-link" href="#parcours">Parcours</a></li>
+                <li class="nav-item"><a class="nav-link" href="#projets">Projets</a></li>
+                <li class="nav-item"><a class="nav-link" href="#autres-experiences">Autres Expériences</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                <li class="nav-item ms-lg-2">
+                    <a class="btn-admin-pill" href="{{ path('app_login') }}" title="Espace administrateur"><i class="bi bi-shield-lock"></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main>
+    {% block body %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <div class="row gy-4 pb-4">
+            <div class="col-lg-4">
+                <a class="navbar-brand mb-3 d-inline-flex" href="{{ path('app_home') }}#home">
+                    <span class="brand-badge"><img src="{{ asset('assets/img/logo.jpeg') }}" alt="" class="brand-img"></span>
+                    <span class="brand-text">Creative <span>&amp;</span> Digital</span>
+                </a>
+                <p class="footer-text">{{ siteProfile.footerBio }}</p>
+            </div>
+            <div class="col-6 col-lg-2 offset-lg-1">
+                <h6 class="footer-title">Navigation</h6>
+                <ul class="footer-links">
+                    <li><a href="#expertise">Expertise</a></li>
+                    <li><a href="#competences">Compétences</a></li>
+                    <li><a href="#parcours">Parcours</a></li>
+                    <li><a href="#projets">Projets</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h6 class="footer-title">Plus</h6>
+                <ul class="footer-links">
+                    <li><a href="#autres-experiences">Autres Expériences</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="{{ path('app_login') }}">Espace Admin</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3">
+                <h6 class="footer-title">Restons en contact</h6>
+                <ul class="footer-links">
+                    <li><a href="mailto:{{ siteProfile.email }}"><i class="bi bi-envelope me-2"></i>{{ siteProfile.email }}</a></li>
+                    {% if siteProfile.phone1 %}<li><a href="tel:{{ siteProfile.phone1|split(' ')|join('') }}"><i class="bi bi-telephone me-2"></i>{{ siteProfile.phone1 }}</a></li>{% endif %}
+                </ul>
+                <div class="social-row mt-3">
+                    {% for social in social_links() %}
+                        <a href="{{ social.url }}" target="_blank" rel="noopener" aria-label="{{ social.label }}"><i class="bi {{ social.icon }}"></i></a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; {{ 'now'|date('Y') }} Mourchad Alaofè — Tous droits réservés.</span>
+            <span>Conçu &amp; développé avec <i class="bi bi-heart-fill text-violet"></i> en Symfony</span>
+        </div>
+    </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Retour en haut"><i class="bi bi-arrow-up"></i></button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('assets/js/main.js') }}"></script>
+<script src="{{ asset('assets/js/flair.js') }}"></script>
+{% block javascripts %}{% endblock %}
+</body>
+</html>

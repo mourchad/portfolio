@@ -1,0 +1,55 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block page_title %}Parcours & timeline{% endblock %}
+
+{% block body %}
+<div class="panel-card reveal">
+    <div class="panel-head d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <h2><i class="bi bi-signpost-2 me-2"></i>{{ steps|length }} étape{{ steps|length > 1 ? 's' : '' }} dans la frise</h2>
+        <a href="{{ path('admin_path_new') }}" class="btn-glow"><i class="bi bi-plus-lg me-2"></i>Nouvelle étape</a>
+    </div>
+
+    {% if steps is empty %}
+        <p class="empty-note py-5 text-center"><i class="bi bi-signpost me-2"></i>La frise chronologique est vide. Ajoutez votre première étape.</p>
+    {% else %}
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Étape</th>
+                        <th>Nature</th>
+                        <th>Dates</th>
+                        <th>Vedette</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for step in steps %}
+                        <tr>
+                            <td class="text-dim">{{ step.position }}</td>
+                            <td>
+                                <strong>{{ step.title }}</strong>
+                                {% if step.place %}<small class="d-block text-dim"><i class="bi {{ step.icon ?: 'bi-geo-alt' }} me-1"></i>{{ step.place }}</small>{% endif %}
+                            </td>
+                            <td><span class="pill pill-blue">{{ constant('App\\Entity\\PathStep::TYPES')[step.type] ?? step.type }}</span></td>
+                            <td class="small text-dim">{{ step.year }} · {{ step.dateLabel }}</td>
+                            <td>{% if step.featured %}<i class="bi bi-star-fill text-warning"></i>{% else %}<span class="text-dim">—</span>{% endif %}</td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a href="{{ path('admin_path_edit', {id: step.id}) }}" class="icon-btn" title="Modifier"><i class="bi bi-pencil-square"></i></a>
+                                    <form method="post" action="{{ path('admin_path_delete', {id: step.id}) }}"
+                                          onsubmit="return confirm('Supprimer cette étape du parcours ?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_path_' ~ step.id) }}">
+                                        <button type="submit" class="icon-btn danger" title="Supprimer"><i class="bi bi-trash3"></i></button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

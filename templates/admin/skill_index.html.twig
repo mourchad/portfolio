@@ -1,0 +1,65 @@
+{% extends 'admin/base_admin.html.twig' %}
+
+{% block page_title %}Compétences, outils & langues{% endblock %}
+
+{% block body %}
+<div class="panel-card reveal">
+    <div class="panel-head d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <h2><i class="bi bi-bar-chart-steps me-2"></i>{{ grouped.competence|length + grouped.expertise|length + grouped.outil|length + grouped.langue|length }} entrée(s)</h2>
+        <a href="{{ path('admin_skill_new') }}" class="btn-glow"><i class="bi bi-plus-lg me-2"></i>Nouvelle entrée</a>
+    </div>
+
+    {% set sections = {
+        'competence': 'Blocs « Compétences » (barre de progression)',
+        'expertise': 'Cartes « Expertise » (points forts)',
+        'outil': 'Logiciels & outils',
+        'langue': 'Langues',
+    } %}
+
+    {% for groupKey, sectionTitle in sections %}
+        <h5 class="mt-4 mb-2 text-uppercase small text-dim">{{ sectionTitle }}</h5>
+        {% set items = grouped[groupKey] %}
+        {% if items is empty %}
+            <p class="empty-note"><i class="bi bi-inbox me-2"></i>Aucune entrée dans cette section.</p>
+        {% else %}
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nom</th>
+                            <th>Niveau</th>
+                            <th>Étiquettes / points</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for skill in items %}
+                            <tr>
+                                <td class="text-dim">{{ skill.position }}</td>
+                                <td>
+                                    {% if skill.icon %}<i class="bi {{ skill.icon }} me-2"></i>{% endif %}
+                                    <strong>{{ skill.name }}</strong>
+                                    {% if skill.description and skill.skillGroup != 'langue' %}<small class="d-block text-dim">{{ skill.description|slice(0, 70) }}{% if skill.description|length > 70 %}…{% endif %}</small>{% endif %}
+                                </td>
+                                <td>{% if skill.percent %}<span class="pill pill-blue">{{ skill.percent }}%</span>{% else %}<span class="text-dim">—</span>{% endif %}</td>
+                                <td class="small text-dim">{{ skill.skillGroup == 'langue' ? skill.description : (skill.tags|join(', ') ?: (skill.items|join(' · ')|slice(0, 60))) }}</td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex gap-2">
+                                        <a href="{{ path('admin_skill_edit', {id: skill.id}) }}" class="icon-btn" title="Modifier"><i class="bi bi-pencil-square"></i></a>
+                                        <form method="post" action="{{ path('admin_skill_delete', {id: skill.id}) }}"
+                                              onsubmit="return confirm('Supprimer cette entrée ?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_skill_' ~ skill.id) }}">
+                                            <button type="submit" class="icon-btn danger" title="Supprimer"><i class="bi bi-trash3"></i></button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}

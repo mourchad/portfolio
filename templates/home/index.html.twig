@@ -1,0 +1,597 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}M - Creative &amp; Digital | Mourchad Alaofè — Développeur Web &amp; Cybersécurité{% endblock %}
+
+{% block body %}
+{# ============================== HERO — ENTRÉE IMMERSIVE ============================== #}
+<section id="home" class="hero" data-particles>
+    <div class="orb orb-violet" data-parallax="0.06"></div>
+    <div class="orb orb-blue" data-parallax="-0.05"></div>
+    <div class="grid-overlay"></div>
+    <canvas id="heroParticles" class="particles-canvas"></canvas>
+
+    <div class="container position-relative">
+        <div class="row align-items-center gy-5 pt-4 pb-4">
+            <div class="col-lg-7">
+                <span class="hero-badge">
+                    <i class="bi bi-mortarboard-fill"></i>
+                    {{ profile.aboutBadge }}
+                </span>
+
+                <h1 class="hero-v2-title">
+                    <span class="line"><span>Mourchad</span></span>
+                    <span class="line"><span>Colawolé</span></span>
+                    <span class="line"><span class="text-outline">Alaofè</span></span>
+                </h1>
+
+                <div class="hero-v2-role">
+                    <i class="bi bi-chevron-right chev"></i>
+                    <span id="typed" data-strings="{{ profile.typedRoles|json_encode(constant('JSON_UNESCAPED_UNICODE'))|e('html_attr') }}"></span>
+                    <span class="typed-caret">&nbsp;</span>
+                </div>
+
+                <p class="hero-v2-lead mt-3">{{ profile.heroLead|raw }}</p>
+
+                <div class="hero-v2-actions d-flex flex-wrap gap-3 mt-4">
+                    <a href="{{ asset(profile.cvPath ?: 'assets/docs/CV_Mourchad.pdf') }}" class="btn-glow" download>
+                        <i class="bi bi-download me-2"></i>Télécharger mon CV
+                    </a>
+                    <a href="#expertise" class="btn-ghost">
+                        Explorer mes compétences<i class="bi bi-arrow-down-right ms-2"></i>
+                    </a>
+                </div>
+
+                <div class="social-row mt-4 hero-v2-actions">
+                    {% for social in social_links() %}
+                        <a href="{{ social.url }}" target="_blank" rel="noopener" aria-label="{{ social.label }}"><i class="bi {{ social.icon }}"></i></a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-lg-5 text-center order-first order-lg-last">
+                <div class="hero-portrait reveal-zoom visible">
+                    <img src="{{ asset(profile.photoPath ?: 'assets/img/image_profil.jpeg') }}" alt="Photo de Mourchad Alaofè" class="profile-img">
+                    <span class="float-chip chip-1"><i class="bi bi-filetype-html"></i> HTML5 · CSS3</span>
+                    <span class="float-chip chip-2"><i class="bi bi-shield-check"></i> Cybersécurité</span>
+                    <span class="float-chip chip-3"><i class="bi bi-braces"></i> Symfony &amp; Django</span>
+                    <span class="float-chip chip-4"><i class="bi bi-palette2"></i> Design Graphique</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-strip">
+            <div class="stat-item">
+                <span class="stat-value"><span class="counter" data-target="{{ projects|length }}">0</span>+</span>
+                <span class="stat-label">Projets réalisés</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value"><span class="counter" data-target="{{ stageCount }}">0</span></span>
+                <span class="stat-label">Stages académiques</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value"><span class="counter" data-target="{{ techCount }}">0</span>+</span>
+                <span class="stat-label">Technologies maîtrisées</span>
+            </div>
+            {% set mentionParts = (profile.statMention ?? '')|split('/') %}
+            <div class="stat-item">
+                <span class="stat-value">{{ mentionParts[0] }}{% if mentionParts[1] is defined %}<span class="stat-sub">/{{ mentionParts[1] }}</span>{% endif %}</span>
+                <span class="stat-label">Mention Très Bien</span>
+            </div>
+        </div>
+    </div>
+    <a href="#expertise" class="scroll-hint" aria-label="Défiler vers le bas"><span></span></a>
+</section>
+
+{# ============================== MARQUEE 1 ============================== #}
+<div class="marquee" aria-hidden="true">
+    {% set words = ['Build', 'Create', 'Teach', 'Secure', 'Design'] %}
+    {% for chunk in 1..2 %}
+        <div class="marquee-chunk">
+            {% for word in words %}
+                <span class="marquee-word {{ loop.index is odd ? 'solid' : '' }}">{{ word }}</span>
+                <i class="bi bi-stars marquee-star"></i>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+
+{# ============================== 01 · EXPERTISE ============================== #}
+<section id="expertise" class="section">
+    <div class="container">
+        <header class="sec-head reveal-lines">
+            <div>
+                <span class="sec-index">01 / Expertise</span>
+                <h2 class="sec-title-xl">
+                    <span class="mask"><span>Ce que je</span></span>
+                    <span class="mask"><span><em class="serif-accent text-gradient" style="font-size:1.08em;">maîtrise</em></span></span>
+                </h2>
+            </div>
+            <div class="sec-side">
+                <p class="sec-sub">Quatre domaines complémentaires qui se renforcent : construire, sécuriser, connecter et raconter.</p>
+            </div>
+        </header>
+
+        <div class="row g-4">
+            {% for card in skills.expertise %}
+                <div class="col-md-6 col-xl-3">
+                    <article class="glass-card expertise-card tilt reveal" style="--d:{{ (loop.index0 * 8 / 100)|number_format(2) }}s">
+                        <div class="icon-ring"><i class="bi {{ card.icon ?: 'bi-stars' }}"></i></div>
+                        <h3>{{ card.name }}</h3>
+                        {% if card.tags|length %}
+                            <div class="chips">
+                                {% for tag in card.tags %}<span>{{ tag }}</span>{% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if card.items|length %}
+                            <ul class="check-list">
+                                {% for item in card.items %}
+                                    <li><i class="bi bi-check2-circle"></i>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </article>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{# ============================== 02 · COMPÉTENCES ============================== #}
+<section id="competences" class="section alt">
+    <div class="container">
+        <header class="sec-head reveal-lines">
+            <div>
+                <span class="sec-index">02 / Compétences</span>
+                <h2 class="sec-title-xl">
+                    <span class="mask"><span>Niveau de</span></span>
+                    <span class="mask"><span><em class="serif-accent text-gradient" style="font-size:1.08em;">précision</em></span></span>
+                </h2>
+            </div>
+            <div class="sec-side">
+                <p class="sec-sub">Un aperçu concret de mes compétences techniques, outil par outil.</p>
+            </div>
+        </header>
+
+        <div class="row g-4">
+            {% for skill in skills.competence %}
+                {% set delay = ['', '.08s', '.12s', '.16s', '.2s'][loop.index0]|default('') %}
+                <div class="col-lg-6">
+                    <div class="skill-block glass-card reveal{% if delay %} style="--d:{{ delay }}"{% endif %}">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h3><i class="bi {{ skill.icon ?: 'bi-graph-up-arrow' }} me-2"></i>{{ skill.name }}</h3>
+                            <span class="percent-badge">{{ skill.percent }}%</span>
+                        </div>
+                        <p>{{ skill.description }}</p>
+                        <div class="progress-track"><div class="progress-fill" data-progress="{{ skill.percent }}"></div></div>
+                        {% if skill.tags|length %}
+                            <div class="chips mt-3">
+                                {% for tag in skill.tags %}<span>{{ tag }}</span>{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{# ============================== 03 · CENTRES D'INTÉRÊTS ============================== #}
+<section id="interets" class="section">
+    <div class="container">
+        <header class="sec-head reveal-lines">
+            <div>
+                <span class="sec-index">03 / Intérêts</span>
+                <h2 class="sec-title-xl">
+                    <span class="mask"><span>Au-delà du</span></span>
+                    <span class="mask"><span><em class="serif-accent text-gradient" style="font-size:1.08em;">code</em></span></span>
+                </h2>
+            </div>
+            <div class="sec-side">
+                <p class="sec-sub">Ce qui nourrit mon énergie et ma créativité au quotidien.</p>
+            </div>
+        </header>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="interest-card glass-card tilt reveal">
+                    <div class="icon-ring"><i class="bi bi-lightbulb"></i></div>
+                    <h3>Codage créatif</h3>
+                    <p>Exploration de projets personnels pour repousser les limites de la programmation.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="interest-card glass-card tilt reveal" style="--d:.08s">
+                    <div class="icon-ring"><i class="bi bi-person-walking"></i></div>
+                    <h3>Sport</h3>
+                    <p>Exercices gymniques pour maintenir une bonne condition physique.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="interest-card glass-card tilt reveal" style="--d:.16s">
+                    <div class="icon-ring"><i class="bi bi-airplane-engines"></i></div>
+                    <h3>Voyage</h3>
+                    <p>Découverte de nouvelles cultures et paysages inspirants.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ============================== 04 · LOGICIELS & LANGUES ============================== #}
+<section id="logiciels-langues" class="section alt">
+    <div class="container">
+        <header class="sec-head reveal-lines">
+            <div>
+                <span class="sec-index">04 / Outils</span>
+                <h2 class="sec-title-xl">
+                    <span class="mask"><span>Logiciels</span></span>
+                    <span class="mask"><span>&amp; <em class="serif-accent text-gradient" style="font-size:1.08em;">langues</em></span></span>
+                </h2>
+            </div>
+            <div class="sec-side">
+                <p class="sec-sub">Les outils du quotidien et les langues qui ouvrent des portes.</p>
+            </div>
+        </header>
+
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="glass-card h-100 reveal">
+                    <h3 class="panel-title"><i class="bi bi-tools me-2"></i>Logiciels</h3>
+                    {% for tool in skills.outil %}
+                        <div class="tool-row">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span>{{ tool.name }}</span><span class="text-dim">{{ tool.percent }}%</span>
+                            </div>
+                            <div class="progress-track slim"><div class="progress-fill" data-progress="{{ tool.percent }}"></div></div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="glass-card h-100 reveal" style="--d:.08s">
+                    <h3 class="panel-title"><i class="bi bi-translate me-2"></i>Langues</h3>
+                    <ul class="lang-list">
+                        {% for langue in skills.langue %}
+                            {% set levelClass = langue.percent >= 90 ? 'native' : (langue.percent >= 60 ? 'good' : 'mid') %}
+                            <li>
+                                <span class="lang-name">{{ langue.name }}</span>
+                                <span class="level-pill {{ levelClass }}">{{ langue.description }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <p class="small text-dim mt-4 mb-0">
+                        <i class="bi bi-info-circle me-1"></i>
+                        J'enseigne l'anglais aux collégiens et lycéens pendant les vacances scolaires et en travaux dirigés.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ============================== 05 · PARCOURS ============================== #}
+<section id="parcours" class="section">
+    <div class="container">
+        <header class="sec-head reveal-lines">
+            <div>
+                <span class="sec-index">05 / Parcours</span>
+                <h2 class="sec-title-xl">
+                    <span class="mask"><span>Une trajectoire</span></span>
+                    <span class="mask"><span><em class="serif-accent text-gradient" style="font-size:1.08em;">en mouvement</em></span></span>
+                </h2>
+            </div>
+            <div class="sec-side">
+                <p class="sec-sub">Une frise claire qui relie le développement, le design et l'enseignement.</p>
+            </div>
+        </header>
+
+        <div class="tl-track-label reveal">
+            <i class="bi bi-code-square"></i> <b>Développer</b>
+            <span>—</span>
+            <i class="bi bi-palette"></i> <b>Créer</b>
+            <span>—</span>
+            <i class="bi bi-mortarboard"></i> <b>Enseigner</b>
+        </div>
+
+        <div class="timeline">
+            {% for step in pathSteps %}
+                <div class="timeline-item {{ loop.index is odd ? 'reveal-right' : 'reveal-left' }}{% if step.featured %} featured-tl{% endif %}">
+                    <div class="tl-dot"></div>
+                    <div class="glass-card tl-card">
+                        <span class="tl-year">{{ step.year }}</span>
+                        <span class="tl-date"><i class="bi bi-calendar3 me-2"></i>{{ step.dateLabel ?: step.year }}</span>
+                        <h3>{{ step.title }}{% if step.featured %} <i class="bi bi-patch-check-fill ms-1"></i>{% endif %}</h3>
+                        {% if step.place %}
+                            <h6><i class="bi {{ step.icon ?: 'bi-geo-alt-fill' }} me-1"></i>{{ step.place }}</h6>
+                        {% endif %}
+                        <p>{{ step.description }}</p>
+                        {% if step.tags|length %}
+                            <div class="chips{{ step.featured ? ' gold' : '' }}">
+                                {% for tag in step.tags %}<span>{{ tag }}</span>{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{# ============================== MARQUEE 2 ============================== #}
+<div class="marquee" aria-hidden="true">
+    {% for chunk in 1..2 %}
+        <div class="marquee-chunk">
+            {% for i in 1..3 %}
+                <span class="marquee-word {{ i == 2 ? 'solid' : '' }}">Travaillons ensemble</span>
+                <i class="bi bi-arrow-up-right marquee-star"></i>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+
+{# ============================== 06 · PROJETS ============================== #}
+<section id="projets" class="section alt">
+    <div class="container">
+        <header class="sec-head reveal-lines">
+            <div>
+                <span class="sec-index">06 / Réalisations</span>
+                <h2 class="sec-title-xl">
+                    <span class="mask"><span>Preuves</span></span>
+                    <span class="mask"><span><em class="serif-accent text-gradient" style="font-size:1.08em;">concrètes</em></span></span>
+                </h2>
+            </div>
+            <div class="sec-side">
+                <p class="sec-sub">Chaque projet est une histoire : un problème réel, une solution livrée.</p>
+            </div>
+        </header>
+
+        {% set catOrder = [
+            {'key': 'web', 'label': 'Développement Web', 'icon': 'bi-code-slash'},
+            {'key': 'security', 'label': 'Cybersécurité', 'icon': 'bi-shield-lock'},
+            {'key': 'network', 'label': 'Réseaux & Télécoms', 'icon': 'bi-broadcast'},
+            {'key': 'design', 'label': 'Design Graphique', 'icon': 'bi-palette'},
+            {'key': 'video', 'label': 'Vidéo', 'icon': 'bi-camera-reels'},
+            {'key': 'other', 'label': 'Autres projets', 'icon': 'bi-folder2-open'},
+        ] %}
+        {% set categoryIcons = {
+            'web': 'bi-code-slash',
+            'security': 'bi-shield-lock',
+            'network': 'bi-broadcast',
+            'design': 'bi-palette',
+            'video': 'bi-camera-reels',
+            'other': 'bi-folder2-open',
+        } %}
+        {% set hasAny = false %}
+        {% for cat in catOrder %}
+            {% set group = projects|filter(p => p.category == cat.key) %}
+            {% if group|length > 0 %}
+                {% set hasAny = true %}
+                <div class="proj-group-head reveal">
+                    <span class="pgh-icon"><i class="bi {{ cat.icon }}"></i></span>
+                    <h3 class="pgh-title">{{ cat.label }}</h3>
+                    <span class="pgh-line"></span>
+                    <span class="pgh-count">{{ group|length }} projet{{ group|length > 1 ? 's' : '' }}</span>
+                </div>
+                <div class="row g-4 mb-5">
+                    {% for project in group %}
+                        <div class="col-md-6 col-xl-4">
+                            <article class="project-card glass-card reveal{% if project.featured %} featured{% endif %}" style="--d:{{ loop.index0 * 8 / 100 }}s">
+                                {% if project.image %}
+                                    <div class="project-visual">
+                                        <img src="{{ asset(project.image) }}" alt="{{ project.title }}" loading="lazy">
+                                    </div>
+                                {% else %}
+                                    <div class="project-visual fallback cat-{{ project.category }}">
+                                        <i class="bi {{ project.icon ?: categoryIcons[project.category] }}"></i>
+                                        {% if project.featured %}<span class="featured-star"><i class="bi bi-star-fill"></i></span>{% endif %}
+                                    </div>
+                                {% endif %}
+                                <div class="p-4 d-flex flex-column flex-grow-1">
+                                    <div class="p-head">
+                                        <span class="category-tag cat-text-{{ project.category }}">
+                                            {{ {
+                                                'web': 'Développement Web',
+                                                'security': 'Cybersécurité',
+                                                'network': 'Réseaux',
+                                                'design': 'Design',
+                                                'video': 'Vidéo',
+                                                'other': 'Projet',
+                                            }[project.category] }}
+                                        </span>
+                                        <span class="p-num">{{ '%02d'|format(loop.index) }}</span>
+                                    </div>
+                                    <div class="d-flex align-items-start justify-content-between gap-3">
+                                        <h3>{{ project.title }}</h3>
+                                        <span class="p-arrow"><i class="bi bi-arrow-up-right"></i></span>
+                                    </div>
+                                    <p>{{ project.description|striptags|slice(0, 150) }}{% if project.description|length > 150 %}…{% endif %}</p>
+                                    <div class="chips mb-0">
+                                        {% for tech in project.technologies %}<span>{{ tech }}</span>{% endfor %}
+                                    </div>
+                                    {% if project.url %}
+                                        <a class="link-more mt-auto pt-3" href="{{ project.url }}" target="_blank" rel="noopener">
+                                            Voir détails <i class="bi bi-arrow-up-right"></i>
+                                        </a>
+                                    {% else %}
+                                        <div class="mt-auto pt-3"></div>
+                                    {% endif %}
+                                </div>
+                            </article>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+        {% if not hasAny %}
+            <div class="row g-4">
+                <div class="col-12">
+                    <p class="text-center text-dim">Les projets seront bientôt disponibles.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+{# ============================== 07 · AUTRES EXPÉRIENCES ============================== #}
+<section id="autres-experiences" class="section">
+    <div class="container">
+        <header class="sec-head reveal-lines">
+            <div>
+                <span class="sec-index">07 / Engagements</span>
+                <h2 class="sec-title-xl">
+                    <span class="mask"><span>Autres</span></span>
+                    <span class="mask"><span><em class="serif-accent text-gradient" style="font-size:1.08em;">expériences</em></span></span>
+                </h2>
+            </div>
+            <div class="sec-side">
+                <p class="sec-sub">Enseigner, organiser, créer : des engagements qui complètent mon profil technique.</p>
+            </div>
+        </header>
+
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="exp-card glass-card reveal-left">
+                    <span class="exp-period">Vacances · Juin – Septembre</span>
+                    <div class="icon-ring sm"><i class="bi bi-mortarboard"></i></div>
+                    <h3>Professeur d'anglais — Groupe LAVOISIER</h3>
+                    <h6><i class="bi bi-geo-alt-fill me-1"></i>Complexe Scolaire Tchinvié dit « OLOYÉ »</h6>
+                    <p>Cours de mise à niveau en anglais pour les élèves de la 6ème à la 2nde pendant les grandes vacances.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="exp-card glass-card reveal-right">
+                    <span class="exp-period">Année scolaire · Samedis dès 17h</span>
+                    <div class="icon-ring sm"><i class="bi bi-journal-bookmark"></i></div>
+                    <h3>Travaux dirigés d'anglais — Groupe LAVOISIER</h3>
+                    <h6><i class="bi bi-geo-alt-fill me-1"></i>Complexe Scolaire Tchinvié dit « OLOYÉ »</h6>
+                    <p>Animation de travaux dirigés en anglais pour les élèves de la classe de 3ème, tous les samedis soirs à partir de 17h.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="exp-card glass-card reveal-left">
+                    <span class="exp-period">À domicile · 6ème → Tle</span>
+                    <div class="icon-ring sm"><i class="bi bi-house-door"></i></div>
+                    <h3>Répétiteur d'anglais</h3>
+                    <h6><i class="bi bi-people-fill me-1"></i>Suivi personnalisé</h6>
+                    <p>Accompagnement individuel d'élèves à domicile en anglais, de la classe de 6ème à la Terminale.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="exp-card glass-card reveal-right">
+                    <span class="exp-period">Freelance</span>
+                    <div class="icon-ring sm"><i class="bi bi-easel2"></i></div>
+                    <h3>Designer graphique</h3>
+                    <h6><i class="bi bi-palette-fill me-1"></i>Affiches professionnelles</h6>
+                    <p>Réalisation d'affiches professionnelles pour tous les événements de mon école ainsi que pour des clients externes.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="exp-card glass-card reveal-left">
+                    <span class="exp-period">2025 – Présent</span>
+                    <div class="icon-ring sm"><i class="bi bi-clipboard2-check"></i></div>
+                    <h3>Organisateur Général Adjoint n°1</h3>
+                    <h6><i class="bi bi-people me-1"></i>Bureau départemental des étudiants — Ouémé/Plateau</h6>
+                    <p>Membre du comité d'organisation du bureau départemental des étudiants des écoles privées du département de l'Ouémé/Plateau.</p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="exp-card glass-card reveal-right">
+                    <span class="exp-period">Centre Dar Salam</span>
+                    <div class="icon-ring sm"><i class="bi bi-book"></i></div>
+                    <h3>Enseignant en études arabiques et islamiques</h3>
+                    <h6><i class="bi bi-geo-alt-fill me-1"></i>Gbèzounkpa, Porto-Novo</h6>
+                    <p>Enseignement de lecture arabe et de sciences islamiques.</p>
+                </div>
+            </div>
+            <div class="col-lg-6 offset-lg-3">
+                <div class="exp-card glass-card reveal">
+                    <span class="exp-period">2016 – 2023</span>
+                    <div class="icon-ring sm"><i class="bi bi-book-half"></i></div>
+                    <h3>Apprenant en études arabiques et islamiques</h3>
+                    <h6><i class="bi bi-geo-alt-fill me-1"></i>Centre AL-HANIFIVATH, Tokomey/Adjarra</h6>
+                    <p>Apprentissage de la lecture arabe et des sciences islamiques.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ============================== GRAND APPEL + CONTACT ============================== #}
+<section id="contact" class="section contact-section alt">
+    <div class="container">
+        <div class="cta-giant reveal-lines">
+            <a href="mailto:{{ profile.email }}">
+                <span class="mask d-block"><span class="cta-line-1">Un projet ?</span></span>
+                <span class="mask d-block"><span class="cta-line-2">Parlons-en.</span></span>
+            </a>
+            <p class="cta-note">Réponse sous 24 à 48 heures — {{ profile.email }}</p>
+        </div>
+
+        <div class="row g-4 mt-5 pt-3">
+            <div class="col-lg-5">
+                <div class="contact-info reveal-left">
+                    <div class="info-row glass-card">
+                        <div class="icon-ring sm"><i class="bi bi-envelope"></i></div>
+                        <div>
+                            <h6>Email</h6>
+                            <a href="mailto:{{ profile.email }}">{{ profile.email }}</a>
+                        </div>
+                    </div>
+                    <div class="info-row glass-card">
+                        <div class="icon-ring sm"><i class="bi bi-telephone"></i></div>
+                        <div>
+                            <h6>Téléphone</h6>
+                            {% if profile.phone1 %}<a href="tel:{{ profile.phone1|split(' ')|join('') }}">{{ profile.phone1 }}</a>{% if profile.phone2 %}<br>{% endif %}{% endif %}
+                            {% if profile.phone2 %}<a href="tel:{{ profile.phone2|split(' ')|join('') }}">{{ profile.phone2 }}</a>{% endif %}
+                        </div>
+                    </div>
+                    <div class="info-row glass-card">
+                        <div class="icon-ring sm"><i class="bi bi-geo-alt"></i></div>
+                        <div>
+                            <h6>Adresse</h6>
+                            <p class="mb-0">{{ profile.address|nl2br }}</p>
+                        </div>
+                    </div>
+                    <div class="social-row lg reveal" style="--d:.1s">
+                        {% for social in social_links() %}
+                            <a href="{{ social.url }}" target="_blank" rel="noopener" aria-label="{{ social.label }}"><i class="bi {{ social.icon }}"></i></a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="glass-card contact-form-card reveal-right">
+                    {% for label in ['success', 'danger'] %}
+                        {% for flashMessage in app.flashes(label) %}
+                            <div class="alert alert-{{ label }} d-flex align-items-center gap-2">
+                                <i class="bi {{ 'success' == label ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill' }}"></i>
+                                {{ flashMessage }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    {{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
+                        <div class="row g-3">
+                            <div class="col-md-6">{{ form_row(form.name) }}</div>
+                            <div class="col-md-6">{{ form_row(form.email) }}</div>
+                            <div class="col-12">{{ form_row(form.subject) }}</div>
+                            <div class="col-12">{{ form_row(form.content) }}</div>
+                        </div>
+                        <div aria-hidden="true" class="hp-wrap">
+                            {{ form_label(form.company) }}
+                            {{ form_widget(form.company) }}
+                            {{ form_errors(form.company) }}
+                        </div>
+                        {{ form_widget(form.formLoadedAt) }}
+                        {{ form_errors(form.formLoadedAt) }}
+                        {{ form_widget(form._token) }}
+                        {{ form_errors(form._token) }}
+                        <button type="submit" class="btn-glow w-100 mt-4">
+                            <i class="bi bi-send me-2"></i>Envoyer
+                        </button>
+                    {{ form_end(form, {render_rest: false}) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
