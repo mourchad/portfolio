@@ -1,0 +1,15 @@
+.git
+.github
+vendor
+var
+node_modules
+public/assets
+public/uploads
+.env.local
+.env.local.php
+.env.dev
+.env.test
+composer.phar
+*.zip
+docker/data
+**/*.log
