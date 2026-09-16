@@ -6,6 +6,12 @@ doctrine:
         # either here or in the DATABASE_URL env var (see .env file)
         server_version: '8.4'
 
+        options:
+            # PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT (1014) : cert TLS non vérifiée
+            1014: false
+            # PDO::MYSQL_ATTR_SSL_CA (1009) : chaîne vide force le tunnel TLS sans CA
+            1009: ''
+
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
     orm:
