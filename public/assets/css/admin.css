@@ -323,3 +323,12 @@
 .form-switch .form-check-input:checked { background-color: var(--violet); border-color: var(--violet-bright); }
 .form-check-label { color: var(--text-main); font-weight: 500; }
 .help-text, small.form-text { color: var(--text-faint) !important; }
+
+/* Admin : le contenu reste visible meme si le JS de revelation (.reveal) ne s'execute pas */
+.admin-content .reveal,
+.admin-content .reveal-left,
+.admin-content .reveal-right,
+.admin-content .reveal-zoom {
+    opacity: 1;
+    transform: none;
+}
