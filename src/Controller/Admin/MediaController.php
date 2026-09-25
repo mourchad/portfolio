@@ -119,7 +119,9 @@ class MediaController extends AbstractController
 
     private function createUploadForm(): \Symfony\Component\Form\FormInterface
     {
-        return $this->createFormBuilder()
+        return $this->createFormBuilder(null, [
+            'action' => $this->generateUrl('admin_media_upload'),
+        ])
             ->add('files', FileType::class, [
                 'label' => false,
                 'multiple' => true,
