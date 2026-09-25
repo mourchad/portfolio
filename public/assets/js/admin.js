@@ -34,3 +34,34 @@
         }, 6000);
     });
 })();
+
+/* Révèle les panneaux .reveal (même comportement que le site public) */
+(function () {
+    'use strict';
+
+    var items = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-zoom');
+    if (!items.length) {
+        return;
+    }
+
+    function show(el) {
+        el.classList.add('visible');
+    }
+
+    if (typeof IntersectionObserver === 'undefined') {
+        items.forEach(show);
+        return;
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                show(entry.target);
+                io.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    items.forEach(function (el) {
+        io.observe(el);
+    });
+})();
